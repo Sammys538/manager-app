@@ -1,4 +1,3 @@
-<<<<<<< HEAD
 # manager_app
 
 A new Flutter project.
@@ -15,7 +14,6 @@ A few resources to get you started if this is your first Flutter project:
 For help getting started with Flutter development, view the
 [online documentation](https://docs.flutter.dev/), which offers tutorials,
 samples, guidance on mobile development, and a full API reference.
-=======
+
 # manager-app
 A management app for organizing community operations
->>>>>>> 8ac6a79279c6b20b5131ad2c5c1011ed2b1234f0
