@@ -1,67 +1,122 @@
 const express = require("express");
-const mysql = require("mysql2");
 require("dotenv").config();
 
 
 const app = express();
-const port = 3000;
+const port = process.env.PORT;
 
 app.use(express.json());
 
-// const db = mysql.createConnection({
-//     host: process.env.DB_HOST,
-//     user: process.env.DB_USER,
-//     password: process.env.DB_PASSWORD,
-//     database: process.env.DB_NAME
-// });
-
-// db.connect(err => {
-//     if(err) {
-//         console.error("Error connecting to MySQL: ", err);
-//         return;
-//     }
-//     console.log("Connected to MySQL");
-// });
+const db = require("./db");
 
 app.get("/", (req, res) => {
     res.send("Backend is running!");
 });
 
 //Transaction Routes
-app.post("/transaction", (req, res) => {
-    const {type, amount, description, date} = req.body;
+app.post("/transactions", (req, res) => {
 
-    console.log("transaction received: " + req.body);
+    // DEBUGGING
+    // if (!req.body) {
+    //     return res.status(400).json({ error: "No body sent" });
+    // }
 
-    res.json({message: "transaction received", data: req.body});
-})
+    const {transaction_type, category, transaction_desc, transaction_amount, admin_id} = req.body;
 
-app.get("/transaction", (req, res) => {
-    const sample = [
-    { id: 1, type: "Income", amount: 200, description: "Service Money"},
-    { id: 2, type: "Expenses", amount: 20, description: "Purchases"}
-    ]
+    const query = `
+        INSERT INTO Transactions(transaction_type, category, transaction_desc, transaction_amount, admin_id)
+        VALUES (? , ?, ?, ? , ?)
+    `;
 
-    res.json(sample);
+    db.query(query, [transaction_type, category, transaction_desc, transaction_amount, admin_id], (err, results) =>{
+        if(err){
+            console.error(err);
+            return res.status(500).send("Database Error");
+        }
+        res.json({message:"Added Transaction", id: results.insertId});
+    });
+});
+
+app.get("/transactions", (req, res) => {
+    db.query("SELECT * FROM Transactions", (err, results) =>{
+        if(err){
+            console.error(err);
+            return res.status(500).send("Database Error");
+        }
+        res.json(results);
+    })
 })
 
 //Users Routes
-app.post("/users", (req, res) => {
-    const {name, email} = req.body;
-    console.log("New user", req.body);
+app.post("/users", (req,res) =>{
 
-    res.json({message: "New User Added", data: req.body});
+    // DEBUGGING
+    // if (!req.body) {
+    //     return res.status(400).json({ error: "No body sent" });
+    // }
 
-})
+    const {name, email, number, role} = req.body;
+
+    const query = `
+        INSERT INTO Users(name, email, number, role) 
+        VALUES (?, ?, ?, ?)
+    `;
+
+    db.query(query, [name, email, number, role], (err, results) =>{
+        if(err){
+            console.error(err);
+            return res.status(500).send("Database Error");
+        }
+        res.json({message: "User added", id: results.insertId});
+    });
+});
+
 
 app.get("/users", (req, res) => {
-    const userSample = [
-        {id: 1, name: "Sam" , email: "dummy@email.com"},
-        {id: 2, name: "Jane Doe", email: "Test@test.com"}
-    ]
-
-    res.json(userSample);
+    db.query("SELECT * FROM Users", (err, results) =>{
+        if(err){
+            console.error(err);
+            return res.status(500).send("Database Error");
+        }
+        res.json(results);
+    })
 })
+
+//Offerings Routes
+app.post("/offerings", (req,res) =>{
+
+    // DEBUGGING
+    // if(!req.body) {
+    //     return res.status(400).json({error: "No Body Sent"});
+    // }
+
+    const{member_name, amount, admin_id} = req.body;
+
+    const query = `
+        INSERT INTO Offerings(member_name, amount, admin_id)
+        VALUES (?, ?, ?)
+    `;
+
+    db.query(query, [member_name, amount, admin_id], (err, results) =>{
+        if(err){
+            console.error(err);
+            return res.status(500).send("Database Error");
+        }
+        res.json({message: "Offering Added", id: res.insertId});
+    });
+});
+
+app.get("/offerings", (req,res) =>{
+    db.query("SELECT * FROM Offerings", (err, results) =>{
+        if(err){
+            console.error(err);
+            return res.status(500).send("Database Error");
+        }
+        res.json(results);
+    });
+});
+
+
 
 
 
