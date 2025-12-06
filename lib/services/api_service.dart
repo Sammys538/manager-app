@@ -5,7 +5,7 @@ import 'package:http/http.dart' as http;
 class APIService{
   static const String serverUrl = "http://localhost:3000";
 
-  static Future<List<dynamic>> getTransaction() async{
+  static Future<List<dynamic>> getTransactions() async{
   final response = await http.get(Uri.parse("$serverUrl/transactions"));
   if (response.statusCode == 200){
     return jsonDecode(response.body);
