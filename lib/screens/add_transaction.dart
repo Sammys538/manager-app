@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import '../services/api_service.dart';
 
 class AddTransaction extends StatefulWidget {
   const AddTransaction({super.key});
@@ -13,6 +14,32 @@ class AddTransaction extends StatefulWidget {
     TextEditingController amountController = TextEditingController();
     TextEditingController descriptionController = TextEditingController();
 
+
+
+  Future<void> submitTransaction() async{
+    Map<String, dynamic> data = {
+      "transaction_type": selectedType,
+      "category": selectedCategory,
+      "transaction_amount" : double.tryParse(amountController.text) ?? 0,
+      "transaction_desc": descriptionController.text,
+      "admin_id": 1,
+    };
+
+    bool success = await APIService.addTransaction(data);
+
+    if(success) {
+      // getBack();
+
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text("Transaction added successfully")),
+      );
+    } else {
+       ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text("Failed to add transaction")),
+       );
+    }
+
+  }
 
   void navigateTo(Widget screen){
     Navigator.push(
@@ -100,7 +127,7 @@ class AddTransaction extends StatefulWidget {
                   Expanded(
                     child: ElevatedButton(
                       onPressed: () {
-                        getBack();
+                        submitTransaction();
                       }, 
                       child: Text("Save")
                       ),

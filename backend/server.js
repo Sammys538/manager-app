@@ -1,10 +1,12 @@
 const express = require("express");
+const cors = require('cors');
 require("dotenv").config();
 
 
 const app = express();
 const port = process.env.PORT;
 
+app.use(cors());
 app.use(express.json());
 
 const db = require("./db");
@@ -33,7 +35,7 @@ app.post("/transactions", (req, res) => {
             console.error(err);
             return res.status(500).send("Database Error");
         }
-        res.json({message:"Added Transaction", id: results.insertId});
+        res.status(201).json({message:"Added Transaction", id: results.insertId});
     });
 });
 
