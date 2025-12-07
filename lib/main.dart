@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:manager_app/screens/offerings_screens.dart';
 import 'package:manager_app/screens/transaction_list.dart';
 import 'screens/home_screen.dart';
 import 'screens/add_transaction.dart';
@@ -42,7 +43,7 @@ class ManagerApp extends StatelessWidget{
         appBar: AppBar(
           // title: Text("Add Transaction"),
           ),
-        body: HomeScreen(),
+        body: OfferingsScreen(),
       ),
       );
   }

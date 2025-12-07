@@ -104,7 +104,7 @@ app.post("/offerings", (req,res) =>{
             console.error(err);
             return res.status(500).send("Database Error");
         }
-        res.json({message: "Offering Added", id: res.insertId});
+        res.status(201).json({message:"Added Transaction", id: results.insertId});
     });
 });
 
