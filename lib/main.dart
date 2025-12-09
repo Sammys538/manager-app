@@ -1,8 +1,11 @@
 import 'package:flutter/material.dart';
+import 'package:manager_app/screens/login.dart';
 import 'package:manager_app/screens/offerings_screens.dart';
+import 'package:manager_app/screens/sign_up.dart';
 import 'package:manager_app/screens/transaction_list.dart';
 import 'screens/home_screen.dart';
 import 'screens/add_transaction.dart';
+import 'screens/sign_up.dart';
 
 void main() {
   runApp(const ManagerApp());
@@ -43,7 +46,7 @@ class ManagerApp extends StatelessWidget{
         appBar: AppBar(
           // title: Text("Add Transaction"),
           ),
-        body: OfferingsScreen(),
+        body: SignUpScreen(),
       ),
       );
   }

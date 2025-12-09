@@ -1,7 +1,7 @@
 // import 'package:flutter/material.dart';
 
-// class LoginScreen extends StatelessWidget {
-//   const LoginScreen({super.key});
+// class SignUpScreen extends StatelessWidget {
+//   const SignUpScreen({super.key});
 
 //   @override
 //   Widget build(BuildContext context) {
@@ -20,18 +20,18 @@ import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 import 'dart:convert';
 
-class LoginScreen extends StatefulWidget {
-  const LoginScreen({super.key});
+class SignUpScreen extends StatefulWidget {
+  const SignUpScreen({super.key});
 
   @override
-  State<LoginScreen> createState() => _LoginScreenState();
+  State<SignUpScreen> createState() => _SignUpScreenState();
 }
 
-class _LoginScreenState extends State<LoginScreen> {
+class _SignUpScreenState extends State<SignUpScreen> {
   final TextEditingController emailController = TextEditingController();
   final TextEditingController passwordController = TextEditingController();
 
-  void login() async {
+  void signUp() async {
     final email = emailController.text;
     final password = passwordController.text;
 
@@ -42,7 +42,7 @@ class _LoginScreenState extends State<LoginScreen> {
       return;
     }
 
-    final url = Uri.parse('http://localhost:3000/login'); // replace with your backend URL
+    final url = Uri.parse('http://localhost:3000/signup'); // replace with your backend URL
     final response = await http.post(url,
       headers: {'Content-Type': 'application/json'},
       body: jsonEncode({'email': email, 'password': password})
@@ -50,9 +50,8 @@ class _LoginScreenState extends State<LoginScreen> {
 
     if(response.statusCode == 200){
       ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text("Login successful"))
+        SnackBar(content: Text("Sign Up successful"))
       );
-      // Navigate to home screen or dashboard here
     } else {
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(content: Text("Error: ${response.body}"))
@@ -63,7 +62,7 @@ class _LoginScreenState extends State<LoginScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(title: Text("Login")),
+      appBar: AppBar(title: Text("Sign Up")),
       body: Padding(
         padding: const EdgeInsets.all(16.0),
         child: Column(
@@ -79,8 +78,8 @@ class _LoginScreenState extends State<LoginScreen> {
             ),
             SizedBox(height: 20),
             ElevatedButton(
-              onPressed: login,
-              child: Text("Login"),
+              onPressed: signUp,
+              child: Text("Sign Up"),
             ),
           ],
         ),
