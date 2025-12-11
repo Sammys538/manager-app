@@ -46,7 +46,7 @@ class ManagerApp extends StatelessWidget{
         appBar: AppBar(
           // title: Text("Add Transaction"),
           ),
-        body: SignUpScreen(),
+        body: LoginScreen(),
       ),
       );
   }
