@@ -1,6 +1,5 @@
 const db = require('../db');
 const bcrypt = require('bcrypt');
-const jwt = require('jsonwebtoken');
 const { hashPassword } = require('../utils/hash');
 
 class User {
@@ -35,6 +34,22 @@ class User {
                 resolve(isMatch);
             });
         });
+    }
+
+    static async getUserByEmail(data){
+        const { email } = data;
+        return new Promise((resolve, reject) => {
+            const sql = `SELECT * FROM ${this.tableName} WHERE email = ?`;
+            const values = [email];
+            db.query(sql, values, (error, result) => {
+                if(error){
+                    console.error("Error fetching by email: " + error);
+                    return reject(error);
+                }
+
+                resolve(result.length ? result[0] : null);
+            })
+        })
     }
 
 }

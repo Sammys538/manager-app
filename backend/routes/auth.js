@@ -2,7 +2,9 @@ const express = require('express');
 const db = require('../db');
 const bcrypt = require('bcrypt');
 const router = express.Router();
+const jwt = require("jsonwebtoken");
 const { User } = require("../modules/User");
+require("dotenv").config();
 
 router.post("/signup", async (req, res) => {
     const {email, password} = req.body;
@@ -20,31 +22,44 @@ router.post("/signup", async (req, res) => {
 });
 
 
-router.post("/login", (req, res) =>{
+router.post("/login", async (req, res) =>{
     const {email, password} = req.body;
 
-    db.query("SELECT * FROM Users WHERE email = ?", [email], async (err, results) => {
-        if(err) {
-            return res.status(500).send("Error");
-        }
-        
-        if(results.length == 0){
-            return res.status(500).send("User was not found");
-        }
+    if(!email || !password){
+        return res.status(400).send("Missing Body");
+    }
 
-        const emailUser = results[0];
+    try{
+        const user = await User.getUserByEmail( { email } );
 
-        const comparison = await bcrypt.compare(password, emailUser.password);
-
-
-        if(!comparison){
-            return res.status(400).send("Incorrect Password");
+        if(!user) {
+            return res.status(401).json({error: "invalid email or password"});
         }
 
-        res.send("Login successful");
-    });
+        const isMatch = await bcrypt.compare(password, user.password);
 
+        if(!isMatch){
+            return res.status(401).json({error: "Invalid email or password"});
+        }
 
+        const token = jwt.sign(
+            {
+                id_users: user.id_users,
+                email: user.email
+            },
+            process.env.JWT_SECRET,
+            { expiresIn: "1h"}
+        );
+
+        res.json({message: "Login successful", token, user: {
+            email: user.email,
+            id_users: user.id_users,
+         }
+        });
+    } catch(error){
+        console.error(error);
+        res.status(500).json({error: "Server Error"});
+    }
 });
 
 
