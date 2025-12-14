@@ -34,6 +34,16 @@ class Transaction {
         });
     }
 
+    static async getAllIncome(){
+        const [income] = await db.query(`SELECT SUM(transaction_amount) AS total FROM ${this.tableName} WHERE transaction_type = 'Income'`);
+        return income[0].total || 0;
+    }
+
+    static async getAllExpense(){
+        const [expense] = await db.query(`SELECT SUM(transaction_amount) AS total FROM ${this.tableName} WHERE transaction_type = 'Expense'`);
+        return expense[0].total || 0;
+    }
+
 }
 
-module.exports = { Transaction };
+module.exports = Transaction;

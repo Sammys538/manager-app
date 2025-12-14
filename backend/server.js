@@ -27,6 +27,8 @@ app.use("/transaction", transactionRoutes);
 const offeringsRoutes = require('./routes/offerings');
 app.use('/offerings', offeringsRoutes);
 
+const summaryRoutes = require('./routes/summary');
+app.use("/summary", summaryRoutes);
 
 app.listen(port, () => {
     console.log(`Server running at http://localhost:${port}`)

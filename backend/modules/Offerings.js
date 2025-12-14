@@ -50,6 +50,11 @@ class Offerings {
             });
         });
     }
+
+    static async getTotalIncome(){
+        const [income] = await db.query(`SELECT SUM(amount) AS total FROM ${this.tableName}`);
+        return income[0].total || 0;
+    }
 }
 
-module.exports = { Offerings };
+module.exports = Offerings;
