@@ -27,6 +27,9 @@ class AddTransaction extends StatefulWidget {
 
     bool success = await APIService.addTransaction(data);
 
+
+
+    // Refresh page when transaction is submitted. ADD THIS
     if(success) {
       // getBack();
 

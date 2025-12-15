@@ -13,6 +13,8 @@
 
 
 //TEMPORARY UI TEST
+
+// ADD CHANGES SIMILAR TO OFFERINGS LIST
 import 'package:flutter/material.dart';
 import '../services/api_service.dart';
 

@@ -2,6 +2,9 @@ import 'package:flutter/material.dart';
 import '../services/api_service.dart';
 import 'package:intl/intl.dart';
 
+// SAME AS TRANSACTION, MAKE THE THING REFRESH WHEN SUBMITTED
+// STYLIZE FOR BETTER FRONTEND AND UI
+
 class OfferingsScreen extends StatefulWidget {
   const OfferingsScreen({super.key});
 

@@ -20,6 +20,8 @@ import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 import 'dart:convert';
 
+// SAME AS LOGIN, CHANGE EVERYTHING TO STYLIZE FOR BETTER UI DESIGN
+
 class SignUpScreen extends StatefulWidget {
   const SignUpScreen({super.key});
 

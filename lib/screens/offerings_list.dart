@@ -4,6 +4,9 @@ import 'package:intl/intl.dart';
 
 
 // TEMP FILE FOR TESTING SORTING FEATURES
+// LIST PAGE SHOULD INCLUDE BUTTONS FOR SEARCH AND SORTING
+// HAVE EITHER A BACK BUTTON OR X BUTTON
+
 class OfferingsListTest extends StatefulWidget {
   const OfferingsListTest({super.key});
 
