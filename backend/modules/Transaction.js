@@ -6,32 +6,28 @@ class Transaction {
     static async createTransaction(data){
         const {transaction_type, category, transaction_desc, transaction_amount, admin_id} = data;
 
-        return new Promise((resolve, reject) => {
-            const sql = `INSERT INTO ${this.tableName} (transaction_type, category, transaction_desc, transaction_amount, admin_id)
-            VALUES (? , ?, ?, ? , ?)`;
-            db.query(sql, [transaction_type, category, transaction_desc, transaction_amount, admin_id], (error, result) => {
-                if(error){
-                    console.error("Error creating transaction: ", error);
-                    return reject(error);
-                }
+        const sql = `INSERT INTO ${this.tableName} (transaction_type, category, transaction_desc, transaction_amount, admin_id)
+        VALUES (? , ?, ?, ? , ?)`;
 
-                resolve({result});
-            });
-        });
+        try{
+            const [results] = await db.query(sql, [transaction_type, category, transaction_desc, transaction_amount, admin_id]);
+            return results;
+        } catch (error){
+            console.error("Error creating transaction: ", error);
+            throw error;
+        }
     }
 
     static async getAllTransactions(){
-        return new Promise((resolve, reject) => {
-            const sql = `SELECT * FROM ${this.tableName} ORDER BY transaction_date DESC`;
-            db.query(sql, (error, result) => {
-                if(error){
-                    console.error("Error fetching all transactions: ", error);
-                    return reject(error);
-                }
+        const sql = `SELECT * FROM ${this.tableName} ORDER BY transaction_date DESC`;
 
-                resolve(result);
-            });
-        });
+        try{
+            const [results] = await db.query(sql);
+            return results;
+        } catch (error){
+            console.error("Error fetching all transactions: ", error);
+            throw error;
+        }
     }
 
     static async getAllIncome(){

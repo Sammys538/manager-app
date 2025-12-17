@@ -1,37 +1,18 @@
-// import 'package:flutter/material.dart';
-
-// class SignUpScreen extends StatelessWidget {
-//   const SignUpScreen({super.key});
-
-//   @override
-//   Widget build(BuildContext context) {
-//     return Scaffold(
-//       appBar: AppBar(
-//         title: const Text('Log In'), 
-//       ),
-//       body: const Center(
-//         child: Text('Welcome to the Church Manager App!'),
-//       ),
-//     );
-//   }
-// }
-
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 import 'dart:convert';
-
-// SAME AS LOGIN, CHANGE EVERYTHING TO STYLIZE FOR BETTER UI DESIGN
 
 class SignUpScreen extends StatefulWidget {
   const SignUpScreen({super.key});
 
   @override
-  State<SignUpScreen> createState() => _SignUpScreenState();
+  SignUpScreenState createState() => SignUpScreenState();
 }
 
-class _SignUpScreenState extends State<SignUpScreen> {
+class SignUpScreenState extends State<SignUpScreen> {
   final TextEditingController emailController = TextEditingController();
   final TextEditingController passwordController = TextEditingController();
+  final TextEditingController confirmPassController = TextEditingController();
 
   void signUp() async {
     final email = emailController.text;
@@ -39,53 +20,106 @@ class _SignUpScreenState extends State<SignUpScreen> {
 
     if(email.isEmpty || password.isEmpty){
       ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text("Email and password cannot be empty"))
+        SnackBar(content: Text("Email or Password cannot be empty")),
       );
       return;
     }
 
-    final url = Uri.parse('http://localhost:3000/signup'); // replace with your backend URL
-    final response = await http.post(url,
-      headers: {'Content-Type': 'application/json'},
-      body: jsonEncode({'email': email, 'password': password})
-    );
 
-    if(response.statusCode == 200){
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text("Sign Up successful"))
+    try {
+      final endpoint = Uri.parse('http://localhost:3000/signup'); //Change this when testing(mainly change for emulator)
+      final response = await http.post(
+        endpoint,
+        headers: {'Content-Type' : 'application/json'},
+        body: jsonEncode({'email': email, 'password': password})
       );
-    } else {
+
+      if(response.statusCode == 200){
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text("Sign Up Sucessful")),
+        );
+
+        await Future.delayed(const Duration(seconds: 1));
+
+        if(!mounted) return;
+        Navigator.pop(context);
+      } else if(response.statusCode == 401){
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text("Invalid email or password. Please try again."))
+        );
+      } else {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text("Sign Up failed. Please try again."))
+        );
+      }
+    } catch (error){
       ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text("Error: ${response.body}"))
+        SnackBar(content: Text("Server Error. Please try again later."))
       );
     }
   }
 
-  @override
-  Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(title: Text("Sign Up")),
-      body: Padding(
-        padding: const EdgeInsets.all(16.0),
-        child: Column(
-          children: [
-            TextField(
-              controller: emailController,
-              decoration: InputDecoration(labelText: "Email"),
+    @override
+    Widget build(BuildContext context){
+      return Scaffold(
+        body: Center(
+          child: Card(
+            elevation: 10,
+            shape: RoundedRectangleBorder(
+              borderRadius: BorderRadius.circular(16),
+              side: const BorderSide(color: Colors.black, width: 2),
             ),
-            TextField(
-              controller: passwordController,
-              decoration: InputDecoration(labelText: "Password"),
-              obscureText: true,
+            child: Padding(
+              padding: const EdgeInsets.all(24),
+              child: Column(
+                mainAxisSize: MainAxisSize.min,
+                crossAxisAlignment: CrossAxisAlignment.stretch,
+                children: [
+                  const Center(
+                    child: Text(
+                      "Sign Up",
+                      style: TextStyle(fontSize: 32, fontWeight: FontWeight.bold),
+                    ),
+                  ),
+                  const SizedBox(height: 24),
+                  TextField(
+                    controller: emailController,
+                    decoration: const InputDecoration(labelText: "Email"),
+                  ),
+                  const SizedBox(height: 16),
+                  TextField(
+                    controller: passwordController,
+                    decoration: const InputDecoration(labelText: "Password"),
+                    obscureText: true,
+                  ),
+                  const SizedBox(height: 16),
+                  TextField(
+                    controller: confirmPassController,
+                    decoration: const InputDecoration(labelText: "Confirm Password"),
+                    obscureText: true,
+                  ),
+                  const SizedBox(height: 24),
+                  ElevatedButton(
+
+                    onPressed: () {
+                      final password = passwordController.text;
+                      final confirm = confirmPassController.text;
+
+                      if(password != confirm){
+                        ScaffoldMessenger.of(context).showSnackBar(
+                          SnackBar(content: Text("Passwords do not match")),
+                        );
+                        return;
+                      }
+                      signUp();
+                    },
+                    child: const Text("Sign Up"),
+                  ),
+                ],
+              ),
             ),
-            SizedBox(height: 20),
-            ElevatedButton(
-              onPressed: signUp,
-              child: Text("Sign Up"),
             ),
-          ],
         ),
-      ),
-    );
-  }
+        );
+    }
 }
