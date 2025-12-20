@@ -6,11 +6,13 @@ class Transaction {
     static async createTransaction(data){
         const {transaction_type, category, transaction_desc, transaction_amount, admin_id} = data;
 
+        const desc = transaction_desc && transaction_desc.trim() !== "" ? transaction_desc.trim() : null;
+
         const sql = `INSERT INTO ${this.tableName} (transaction_type, category, transaction_desc, transaction_amount, admin_id)
         VALUES (? , ?, ?, ? , ?)`;
 
         try{
-            const [results] = await db.query(sql, [transaction_type, category, transaction_desc, transaction_amount, admin_id]);
+            const [results] = await db.query(sql, [transaction_type, category, desc, transaction_amount, admin_id]);
             return results;
         } catch (error){
             console.error("Error creating transaction: ", error);

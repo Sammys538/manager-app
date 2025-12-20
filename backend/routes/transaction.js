@@ -1,7 +1,7 @@
 const express = require('express');
 const db = require('../db');
 const router = express.Router();
-const { Transaction } = require('../modules/Transaction');
+const Transaction = require('../modules/Transaction');
 
 
 router.post("/", async (req, res) => {
@@ -13,7 +13,7 @@ router.post("/", async (req, res) => {
 
     const{ transaction_type, category, transaction_desc, transaction_amount, admin_id} = data;
 
-    if(!transaction_type || !category || !transaction_desc || !transaction_amount || !admin_id){
+    if(!transaction_type || !category || !transaction_amount || !admin_id){
         return res.status(400).send("Missing values");
     }
 

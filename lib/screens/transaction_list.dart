@@ -1,25 +1,41 @@
-// import 'package:flutter/material.dart';
-
-// class TransactionList extends StatelessWidget {
-//   const TransactionList({super.key});
-
-//   @override
-//   Widget build(BuildContext context){
-//     return MaterialApp(
-
-//     );
-//   }
-// }
-
-
 //TEMPORARY UI TEST
 
 // ADD CHANGES SIMILAR TO OFFERINGS LIST
 import 'package:flutter/material.dart';
 import '../services/api_service.dart';
 
-class TransactionListTest extends StatelessWidget {
-  const TransactionListTest({super.key});
+class TransactionList extends StatefulWidget{
+  const TransactionList({super.key});
+
+  @override
+  TransactionListState createState() => TransactionListState();
+}
+
+class TransactionListState extends State<TransactionList>{
+  List transactions = [];
+  List filteredTransactions = [];
+  bool loading = false;
+  TextEditingController searchController = TextEditingController();
+
+  @override
+  void initState() {
+    super.initState();
+    
+  }
+
+  Future<void> fetchTransactions() async {
+    setState(() => loading = true);
+    try {
+      final data = await APIService.getTransactions();
+
+      data.sort((a, b) => DateTime.parse(b['transaction_date'])
+          .compareTo(DateTime.parse(a['transaction_date'])));
+    } catch(error){
+      print("Error fetching transactions: $error");
+    }
+
+    setState(() => loading = false);
+  }
 
   @override
   Widget build(BuildContext context) {

@@ -1,7 +1,7 @@
 const express = require('express');
 const db = require('../db');
 const router = express.Router();
-const { Offerings } = require('../modules/Offerings');
+const Offerings = require('../modules/Offerings');
 
 
 router.post("/", async (req,res) =>{

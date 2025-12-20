@@ -13,8 +13,8 @@ class OfferingsScreen extends StatefulWidget {
 }
 
 class OfferingsScreenFormState extends State<OfferingsScreen> {
-  TextEditingController nameController = TextEditingController();
-  TextEditingController amountController = TextEditingController();
+  final TextEditingController nameController = TextEditingController();
+  final TextEditingController amountController = TextEditingController();
 
   DateTime? selectedDate; // New variable for user-input date
 
@@ -85,67 +85,90 @@ class OfferingsScreenFormState extends State<OfferingsScreen> {
     return DateFormat('yyyy-MM-dd').format(date);
   }
 
+  void getBack() {
+    Navigator.pop(context);
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(title: const Text("Offerings Test")),
-      body: Padding(
-        padding: const EdgeInsets.all(16.0),
-        child: Column(
+      body: SafeArea(
+        child: Stack(
           children: [
-            // Input fields
-            TextField(
-              controller: nameController,
-              decoration: const InputDecoration(labelText: "Member Name"),
-            ),
-            TextField(
-              controller: amountController,
-              decoration: const InputDecoration(labelText: "Amount"),
-              keyboardType: TextInputType.number,
-            ),
-            const SizedBox(height: 10),
-            // Date picker button
-            ElevatedButton(
-              onPressed: pickDate,
-              child: Text(formatDate(selectedDate)),
-            ),
-            const SizedBox(height: 10),
-            ElevatedButton(
-              onPressed: submitOfferings,
-              child: const Text("Submit Offering"),
-            ),
-            const SizedBox(height: 20),
-            // Offerings list
-            loading
-                ? const CircularProgressIndicator()
-                : Expanded(
-                    child: offerings.isEmpty
-                        ? const Center(child: Text("No offerings found"))
-                        : ListView.builder(
-                            itemCount: offerings.length,
-                            itemBuilder: (context, index) {
-                              final item = offerings[index];
-                              return ListTile(
-                                title: Text(item["member_name"] ?? ""),
-                                subtitle: Text(
-                                    "Amount: ${item["amount"]}\nDate: ${item["offering_date"] ?? 'N/A'}"),
-                              );
-                            },
+            Center(
+              child: Card(
+                elevation: 10,
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(16),
+                  side: const BorderSide(color: Colors.black, width: 2),
+                ),
+                child: Padding(
+                  padding: const EdgeInsets.all(24),
+                  child: SingleChildScrollView(
+                    child: Column(
+                      mainAxisSize: MainAxisSize.min,
+                      crossAxisAlignment: CrossAxisAlignment.stretch,
+                      children: [
+                        const Center(
+                          child: Text(
+                            "Add Offering",
+                            style: TextStyle(
+                              fontSize: 32,
+                              fontWeight: FontWeight.bold,
+                            ),
                           ),
+                        ),
+                        const SizedBox(height: 24),
+                        const Text("Member Name"),
+                        TextField(controller: nameController),
+                        const SizedBox(height: 24),
+                        const Text("Amount"),
+                        TextField(
+                          controller: amountController,
+                          keyboardType: TextInputType.number,
+                        ),
+                        const SizedBox(height: 10),
+                        ElevatedButton(
+                          onPressed: pickDate,
+                          child: Text(formatDate(selectedDate)),
+                        ),
+                        const SizedBox(height: 24),
+                        Row(
+                          children: [
+                            Expanded(
+                              child: OutlinedButton(
+                                onPressed: getBack,
+                                child: const Text("Cancel"),
+                              ),
+                            ),
+                            const SizedBox(width: 12),
+                            Expanded(
+                              child: OutlinedButton(
+                                onPressed: submitOfferings,
+                                child: const Text("Save"),
+                              ),
+                            ),
+                          ],
+                        )
+                      ],
+                    ),
                   ),
+                ),
+              ),
+            ),
+
+            // Go back arrow, top left
+            Positioned(
+              top: 8,
+              left: 8,
+              child: IconButton(
+                icon: const Icon(Icons.arrow_back),
+                onPressed: () => Navigator.pop(context),
+              ),
+            ),
           ],
         ),
       ),
     );
   }
 }
-
-
-
-//   @override
-//   Widget build(BuildContext context){
-//     return SingleChildScrollView(
-
-//     );
-//   }
-// }

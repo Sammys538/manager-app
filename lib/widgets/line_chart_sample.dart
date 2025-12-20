@@ -2,7 +2,8 @@ import 'package:fl_chart/fl_chart.dart';
 import 'package:flutter/material.dart';
 
 class LineChartSample2 extends StatefulWidget {
-  const LineChartSample2({super.key});
+  final List<FlSpot> chartData;
+  const LineChartSample2({super.key, required this.chartData});
 
   @override
   State<LineChartSample2> createState() => _LineChartSample2State();
@@ -33,7 +34,7 @@ class _LineChartSample2State extends State<LineChartSample2> {
               showAvg ? avgData() : mainData(),
             ),
           ),
-        ),
+         ),
         SizedBox(
           width: 60,
           height: 34,
@@ -64,9 +65,9 @@ class _LineChartSample2State extends State<LineChartSample2> {
       fontSize: 16,
     );
     String text = switch (value.toInt()) {
-      2 => 'MAR',
-      5 => 'JUN',
-      8 => 'SEP',
+      2 => 'OCT',
+      5 => 'NOV',
+      8 => 'DEC',
       _ => '',
     };
     return SideTitleWidget(
@@ -81,9 +82,9 @@ class _LineChartSample2State extends State<LineChartSample2> {
       fontSize: 15,
     );
     String text = switch (value.toInt()) {
-      1 => '10K',
-      3 => '30k',
-      5 => '50k',
+      2 => '100',
+      5 => '300',
+      10 => '500',
       _ => '',
     };
 
@@ -140,20 +141,24 @@ class _LineChartSample2State extends State<LineChartSample2> {
         border: Border.all(color: const Color(0xff37434d)),
       ),
       minX: 0,
-      maxX: 11,
+      maxX: 10,
       minY: 0,
-      maxY: 6,
+      maxY: 50,
+
+
       lineBarsData: [
         LineChartBarData(
-          spots: const [
-            FlSpot(0, 3),
-            FlSpot(2.6, 2),
-            FlSpot(4.9, 5),
-            FlSpot(6.8, 3.1),
-            FlSpot(8, 4),
-            FlSpot(9.5, 3),
-            FlSpot(11, 4),
-          ],
+          spots: widget.chartData,
+          // spots: const [
+          //   FlSpot(0, 3),
+          //   FlSpot(2.6, 2),
+          //   FlSpot(4.9, 5),
+          //   FlSpot(6.8, 3.1),
+          //   FlSpot(8, 4),
+          //   FlSpot(9.5, 3),
+          //   FlSpot(11, 4),
+          // ],
+
           isCurved: true,
           gradient: LinearGradient(
             colors: gradientColors,
@@ -227,20 +232,21 @@ class _LineChartSample2State extends State<LineChartSample2> {
         border: Border.all(color: const Color(0xff37434d)),
       ),
       minX: 0,
-      maxX: 11,
+      maxX: 10,
       minY: 0,
-      maxY: 6,
+      maxY: 200,
       lineBarsData: [
         LineChartBarData(
-          spots: const [
-            FlSpot(0, 3.44),
-            FlSpot(2.6, 3.44),
-            FlSpot(4.9, 3.44),
-            FlSpot(6.8, 3.44),
-            FlSpot(8, 3.44),
-            FlSpot(9.5, 3.44),
-            FlSpot(11, 3.44),
-          ],
+          spots: widget.chartData,
+          // spots: const [
+          //   FlSpot(0, 3.44),
+          //   FlSpot(2.6, 3.44),
+          //   FlSpot(4.9, 3.44),
+          //   FlSpot(6.8, 3.44),
+          //   FlSpot(8, 3.44),
+          //   FlSpot(9.5, 3.44),
+          //   FlSpot(11, 3.44),
+          // ],
           isCurved: true,
           gradient: LinearGradient(
             colors: [
