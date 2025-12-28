@@ -3,23 +3,20 @@ import '../services/api_service.dart';
 import 'package:intl/intl.dart';
 
 
-// TEMP FILE FOR TESTING SORTING FEATURES
-// LIST PAGE SHOULD INCLUDE BUTTONS FOR SEARCH AND SORTING
-// HAVE EITHER A BACK BUTTON OR X BUTTON
-
-class OfferingsListTest extends StatefulWidget {
-  const OfferingsListTest({super.key});
+class OfferingsList extends StatefulWidget {
+  const OfferingsList({super.key});
 
   @override
-  State<OfferingsListTest> createState() => _OfferingsListTestState();
+  OfferingsListState createState() => OfferingsListState();
 }
 
-class _OfferingsListTestState extends State<OfferingsListTest> {
+class OfferingsListState extends State<OfferingsList> {
   List offerings = [];
   List filteredOfferings = [];
   bool loading = false;
   TextEditingController searchController = TextEditingController();
   bool sortByNameAsc = true;
+  String? selectSort = "newest";
 
   @override
   void initState() {
@@ -30,9 +27,8 @@ class _OfferingsListTestState extends State<OfferingsListTest> {
   Future<void> fetchOfferings() async {
     setState(() => loading = true);
     try {
-      final data = await APIService.getOfferings(); // should return List<dynamic>
+      final data = await APIService.getOfferings();
 
-      // Default sort by date descending
       data.sort((a, b) => DateTime.parse(b['offering_date'])
           .compareTo(DateTime.parse(a['offering_date'])));
 
@@ -72,72 +68,84 @@ class _OfferingsListTestState extends State<OfferingsListTest> {
     });
   }
 
+  void sortbyDate(String? value){
+    setState((){
+      selectSort = value;
+      filteredOfferings.sort((a,b) {
+        return value == "newest"
+          ? DateTime.parse(b['offering_date'])
+            .compareTo(DateTime.parse(a['offering_date']))
+          : DateTime.parse(a['offering_date'])
+            .compareTo(DateTime.parse(b['offering_date']));
+      });
+    });
+  }
+
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(title: const Text("Offerings Test")),
+      appBar: AppBar(title: const Text("Offering List")),
       body: Padding(
-        padding: const EdgeInsets.all(16.0),
+        padding: const EdgeInsets.all(16),
+
         child: Column(
           children: [
-            // Search bar
-            TextField(
-              controller: searchController,
-              decoration: const InputDecoration(
-                labelText: "Search by Name",
-                prefixIcon: Icon(Icons.search),
-              ),
-              onChanged: filterByName,
-            ),
-            const SizedBox(height: 10),
-            // Sorting buttons
             Row(
-              mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+              mainAxisAlignment: MainAxisAlignment.start,
+              crossAxisAlignment: CrossAxisAlignment.center,
               children: [
-                ElevatedButton.icon(
-                  onPressed: () {
-                    // default: sort by date descending
-                    setState(() {
-                      filteredOfferings.sort((a, b) => DateTime.parse(b['offering_date'])
-                          .compareTo(DateTime.parse(a['offering_date'])));
-                    });
-                  },
-                  icon: const Icon(Icons.date_range),
-                  label: const Text("Sort by Date"),
-                ),
-                ElevatedButton.icon(
-                  onPressed: sortByName,
-                  icon: const Icon(Icons.sort_by_alpha),
-                  label: const Text("Sort by Name"),
-                ),
+                Expanded(
+                  child: 
+                    TextField(
+                      controller: searchController,
+                      decoration: const InputDecoration(
+                        labelText: "Search by Name",
+                        prefixIcon: Icon(Icons.search),
+                        isDense: true,
+                      ),
+                      onChanged: filterByName,
+                    ),
+                ), 
+
+
+                Text("Order by: "),
+                DropdownButton(
+                  value: selectSort,
+                  items: const [
+                    DropdownMenuItem(value: "newest", child: Text("Newest")),
+                    DropdownMenuItem(value: "oldest", child: Text("Oldest")),
+                  ], 
+                  onChanged: (value) {
+                    sortbyDate(value);
+                  }
+                  ),
+
               ],
             ),
+
             const SizedBox(height: 10),
-            // Offerings list
-            loading
-                ? const CircularProgressIndicator()
-                : Expanded(
-                    child: filteredOfferings.isEmpty
-                        ? const Center(child: Text("No offerings found"))
-                        : ListView.builder(
-                            itemCount: filteredOfferings.length,
-                            itemBuilder: (context, index) {
-                              final item = filteredOfferings[index];
-                              final date = DateTime.tryParse(item['offering_date']) ??
-                                  DateTime.now();
-                              final formattedDate =
-                                  DateFormat('yyyy-MM-dd').format(date);
-                              return ListTile(
-                                title: Text(item['member_name'] ?? ""),
-                                subtitle: Text(
-                                    "Amount: ${item['amount']}\nDate: $formattedDate"),
-                              );
-                            },
-                          ),
-                  ),
-          ],
-        ),
-      ),
+            Expanded(
+              child: ListView.builder(
+                itemCount: filteredOfferings.length,
+                itemBuilder: (context, index) {
+                  final item = filteredOfferings[index];
+                  final date = DateTime.tryParse(item['offering_date']) ?? DateTime.now();
+                  final formattedDate = DateFormat('yyyy-MM-dd').format(date);
+                  return Card(
+                    margin: const EdgeInsets.symmetric(vertical: 4),
+                    child: ListTile(
+                      title: Text(item['member_name'] ?? ""),
+                      subtitle: Text("Date: $formattedDate"),
+                      trailing: Text("\$${item['amount'] ?? 0}"),
+                    )
+                  );
+                }
+              )
+            ),
+          ]
+        )
+      )
     );
   }
 }

@@ -1,8 +1,3 @@
-// PAGE SHOULD INCLUDE BALANCE, INCOME, and EXPENSES
-// CHART SHOULD ALSO HAVE THE REAL DATA
-// INCLUDE ICONS + for positive, - for negative
-// INCLUDE ADD TRANSACTION/OFFERING BUTTONS
-// ALSO INCLUDE BOXES TO LOOK AT LISTS FOR EACH THING
 import 'package:flutter/material.dart';
 import 'package:manager_app/screens/offerings_list.dart';
 import 'package:manager_app/screens/offerings_screens.dart';
@@ -395,12 +390,12 @@ class HomeScreenState extends State<HomeScreen> {
                                       child: ListView.builder(
                                         itemCount: recentOfferings.length,
                                         itemBuilder: (context, index) {
-                                          final tx = recentOfferings[index]; // Map<String, dynamic>
+                                          final tx = recentOfferings[index];
                                           return InkWell(
                                             onTap: () {
                                               Navigator.push(
                                                 context,
-                                                MaterialPageRoute(builder: (_) => const OfferingsListTest()),
+                                                MaterialPageRoute(builder: (_) => const OfferingsList()),
                                               );
                                             },
                                             child: Padding(

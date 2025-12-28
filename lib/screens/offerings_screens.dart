@@ -2,9 +2,6 @@ import 'package:flutter/material.dart';
 import '../services/api_service.dart';
 import 'package:intl/intl.dart';
 
-// SAME AS TRANSACTION, MAKE THE THING REFRESH WHEN SUBMITTED
-// STYLIZE FOR BETTER FRONTEND AND UI
-
 class OfferingsScreen extends StatefulWidget {
   const OfferingsScreen({super.key});
 
@@ -16,7 +13,7 @@ class OfferingsScreenFormState extends State<OfferingsScreen> {
   final TextEditingController nameController = TextEditingController();
   final TextEditingController amountController = TextEditingController();
 
-  DateTime? selectedDate; // New variable for user-input date
+  DateTime? selectedDate;
 
   List offerings = [];
   bool loading = false;
@@ -64,17 +61,23 @@ class OfferingsScreenFormState extends State<OfferingsScreen> {
       "member_name": memberName,
       "amount": amount,
       "admin_id": 1, // temp value for testing
-      "offering_date": selectedDate!.toIso8601String(), // Send date in ISO format
+      "offering_date": selectedDate!.toIso8601String(),
     };
 
-    final success = await APIService.addOfferings(data);
+    bool success = await APIService.addOfferings(data);
 
     if (success) {
       print("Offering added!");
       nameController.clear();
       amountController.clear();
       setState(() => selectedDate = null);
-      fetchOfferings(); // refresh list
+      fetchOfferings();
+
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text("Offering added successfully")),
+      );
+      Navigator.pop(context, true);
+
     } else {
       print("Failed to add offering");
     }
