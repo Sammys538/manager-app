@@ -22,17 +22,19 @@ class HomeScreenState extends State<HomeScreen> {
   String? token;
 
   Future<Summary>? summaryFuture;
+  Summary? summary;
 
   List<Map<String, dynamic>> recentTransactions = [];
   List<Map<String, dynamic>> recentOfferings = [];
   List<FlSpot> chartData = [];
+  List<DateTime> chartDates = [];
 
   @override
   void initState() {
     super.initState();
     loadUserInfo();
-    fetchTransactions();
     fetchOfferings();
+    fetchChartData();
 
   }
 
@@ -43,6 +45,15 @@ class HomeScreenState extends State<HomeScreen> {
 
     if(token != null){
       summaryFuture = APIService.getSummary(token!);
+      summaryFuture!.then((data) {
+        setState(() {
+          summary = data;
+        });
+
+
+        print("Summary loaded, fetching trasnactions...");
+        fetchTransactions();
+      });
     }
 
     setState(() {});
@@ -54,26 +65,9 @@ class HomeScreenState extends State<HomeScreen> {
       print("Fetched transactions: $transactions");
       setState(() {
         recentTransactions = transactions
-          .take(3)
+          .take(8)
           .map((tx) => tx as Map<String, dynamic>)
-          .toList();
-
-
-        final count = recentTransactions.length;
-        chartData = recentTransactions.asMap().entries.map((entry) {
-          int index = entry.key;
-          Map<String, dynamic> tx = entry.value;
-
-          double amount = 0;
-          if (tx['transaction_amount'] != null){
-            amount = double.tryParse(tx['transaction_amount'].toString()) ?? 0;
-          }
-
-          return FlSpot((count - 1 - index).toDouble(), amount);
-        }).toList();
-
-        print("Chart Data: $chartData"); // USED FOR DEBUGGING
-        
+          .toList();       
       });
     } catch (error){
       print("Error fetching transactions: $error");
@@ -93,6 +87,56 @@ class HomeScreenState extends State<HomeScreen> {
     } catch (error) {
       print("Error fetching offerings: $error");
     }
+  }
+
+  Future<void> fetchChartData() async {
+    final OfferingsList = await APIService.getOfferings();
+    final transactionList = await APIService.getTransactions();
+
+  final allEntries = [
+    ...transactionList.map((tx) => {
+          'date': tx['transaction_date'],
+          'type': tx['transaction_type'],
+          'amount': tx['transaction_amount'],
+        }),
+    ...OfferingsList.map((of) => {
+          'date': of['offering_date'],
+          'type': 'Income',
+          'amount': of['amount'],
+        }),
+  ];
+
+  allEntries.sort((a, b) =>
+      DateTime.parse(a['date']).compareTo(DateTime.parse(b['date']))
+  );
+
+  double balanceHistory = 0;
+  List<FlSpot> spots = [];
+  List<DateTime> dates = [];
+
+  for (int i = 0; i < allEntries.length; i++) {
+    final entry = allEntries[i];
+    final double amount =
+        double.tryParse(entry['amount']?.toString() ?? '0') ?? 0;
+
+    if (entry['type'].toString().toLowerCase() == 'income') {
+      balanceHistory += amount;
+    } else if (entry['type'].toString().toLowerCase() == 'expense') {
+      balanceHistory -= amount;
+    }
+
+    spots.add(FlSpot(i.toDouble(), balanceHistory));
+    dates.add(DateTime.parse(entry['date']));
+  }
+
+  setState(() {
+    chartData = spots;
+    chartDates = dates;
+  });
+
+  for (final spot in chartData) {
+    print("x=${spot.x}, y=${spot.y}");
+  }
   }
 
   Future<void> logout() async {
@@ -153,7 +197,7 @@ class HomeScreenState extends State<HomeScreen> {
                                 decoration: BoxDecoration(
                                   border: Border.all(
                                     color: Colors.black,
-                                    width: 10,
+                                    width: 1,
                                   ),
                                   borderRadius: BorderRadius.circular(8),
                                 ),
@@ -187,7 +231,7 @@ class HomeScreenState extends State<HomeScreen> {
                                 decoration: BoxDecoration(
                                   border: Border.all(
                                     color: Colors.black,
-                                    width: 10,
+                                    width: 1,
                                   ),
                                   borderRadius: BorderRadius.circular(8),
                                 ),
@@ -203,7 +247,7 @@ class HomeScreenState extends State<HomeScreen> {
                                     Text(
                                       "\$${summary.totalIncome}",
                                       style: const TextStyle(
-                                          color: Colors.black,
+                                          color: Colors.green,
                                           fontSize: 24,
                                           fontWeight: FontWeight.bold),
                                     ),
@@ -221,7 +265,7 @@ class HomeScreenState extends State<HomeScreen> {
                                 decoration: BoxDecoration(
                                   border: Border.all(
                                     color: Colors.black,
-                                    width: 10,
+                                    width: 1,
                                   ),
                                   borderRadius: BorderRadius.circular(8),
                                 ),
@@ -237,7 +281,7 @@ class HomeScreenState extends State<HomeScreen> {
                                     Text(
                                       "\$${summary.expenses}",
                                       style: const TextStyle(
-                                          color: Colors.black,
+                                          color: Colors.red,
                                           fontSize: 24,
                                           fontWeight: FontWeight.bold),
                                     ),
@@ -255,8 +299,8 @@ class HomeScreenState extends State<HomeScreen> {
                                 decoration: BoxDecoration(
                                   borderRadius: BorderRadius.circular(8),
                                   border: Border.all(
-                                    color: Colors.green,
-                                    width: 10,
+                                    color: Colors.black,
+                                    width: 1,
                                   ),
                                   boxShadow: [
                                     BoxShadow(
@@ -334,14 +378,12 @@ class HomeScreenState extends State<HomeScreen> {
                                     borderRadius: BorderRadius.circular(8),
                                   ),
                                   child: Center(
-                                      child: chartData.isEmpty
+                                      child: (chartData.isEmpty || chartDates.isEmpty)
                                       ? const Center(child: CircularProgressIndicator())
-                                      : LineChartSample2(chartData: chartData),
-                                  //      Text(
-                                  //   "Chart",
-                                  //   style: TextStyle(
-                                  //       color: Colors.black, fontSize: 16),
-                                  // )
+                                      : LineChartSample2(
+                                        chartData: chartData,
+                                        chartDates: chartDates,
+                                      ),
                                   ),
                                 ),
                               ),
@@ -450,26 +492,12 @@ class HomeScreenState extends State<HomeScreen> {
                                   ],
                                 ),
                               ),
-
-                                // child: Container(
-                                //   margin: const EdgeInsets.all(4),
-                                //   padding: const EdgeInsets.all(16),
-                                //   decoration: BoxDecoration(
-                                //     borderRadius: BorderRadius.circular(8),
-                                //   ),
-                                //   child: const Center(
-                                //       child: Text(
-                                //     "Offering Box",
-                                //     style: TextStyle(
-                                //         color: Colors.black, fontSize: 16),
-                                //   )),
-                                // ),
                               ),
-
-
                             ],
                           ),
                         ),
+
+                        
                       ],
                     );
                   },

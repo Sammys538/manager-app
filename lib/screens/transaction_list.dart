@@ -1,6 +1,3 @@
-//TEMPORARY UI TEST
-
-// ADD CHANGES SIMILAR TO OFFERINGS LIST
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import '../services/api_service.dart';
@@ -66,13 +63,6 @@ class TransactionListState extends State<TransactionList>{
         
         child: Column(
           children: [
-            // TextField(
-            //   controller: searchController,
-            //   decoration: const InputDecoration(
-            //     labelText: "Search",
-            //     prefixIcon: Icon(Icons.search),
-            //   ),
-            // ),
             Row(
               mainAxisAlignment: MainAxisAlignment.start,
               crossAxisAlignment: CrossAxisAlignment.center,

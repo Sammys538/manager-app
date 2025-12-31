@@ -5,6 +5,7 @@ import 'package:manager_app/screens/sign_up.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'home_screen.dart';
 import 'package:flutter/gestures.dart';
+import 'package:flutter/foundation.dart' show kIsWeb;
 
 class LoginScreen extends StatefulWidget {
   const LoginScreen({super.key});
@@ -20,6 +21,7 @@ class LoginScreenState extends State<LoginScreen> {
   void login() async {
     final email = emailController.text;
     final password = passwordController.text;
+    String serverUrl = kIsWeb ? "http://localhost:3000" : "http://10.0.2.2:3000";
     // print("Login pressed: email=$email, password=$password"); FOR DEBUGGING
 
     if(email.isEmpty || password.isEmpty){
@@ -30,7 +32,7 @@ class LoginScreenState extends State<LoginScreen> {
     }
 
     try{
-      final endpoint = Uri.parse('http://localhost:3000/login'); // Change this when testing (changes if using emulator)
+      final endpoint = Uri.parse('$serverUrl/login'); // Change this when testing (changes if using emulator)
       final response = await http.post(
         endpoint,
         headers: {'Content-Type': 'application/json'},

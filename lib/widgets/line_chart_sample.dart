@@ -1,9 +1,15 @@
 import 'package:fl_chart/fl_chart.dart';
 import 'package:flutter/material.dart';
+import 'package:manager_app/main.dart';
 
 class LineChartSample2 extends StatefulWidget {
   final List<FlSpot> chartData;
-  const LineChartSample2({super.key, required this.chartData});
+  final List<DateTime> chartDates;
+  const LineChartSample2({
+    super.key, 
+    required this.chartData,
+    required this.chartDates,
+  });
 
   @override
   State<LineChartSample2> createState() => _LineChartSample2State();
@@ -60,20 +66,24 @@ class _LineChartSample2State extends State<LineChartSample2> {
   }
 
   Widget bottomTitleWidgets(double value, TitleMeta meta) {
-    const style = TextStyle(
-      fontWeight: FontWeight.bold,
-      fontSize: 16,
-    );
-    String text = switch (value.toInt()) {
-      2 => 'OCT',
-      5 => 'NOV',
-      8 => 'DEC',
-      _ => '',
-    };
+    const style = TextStyle(fontWeight: FontWeight.bold, fontSize: 12);
+
+    int index = value.toInt();
+
+    if (widget.chartDates.isEmpty || index < 0 || index >= widget.chartDates.length){
+      return Container();
+    }
+
+    // Only show every 5th date (adjust as needed)
+    String text = index % 5 == 0 
+        ? "${widget.chartDates[index].month}/${widget.chartDates[index].day}" 
+        : "";
+
     return SideTitleWidget(
       meta: meta,
       child: Text(text, style: style),
     );
+
   }
 
   Widget leftTitleWidgets(double value, TitleMeta meta) {
@@ -82,9 +92,9 @@ class _LineChartSample2State extends State<LineChartSample2> {
       fontSize: 15,
     );
     String text = switch (value.toInt()) {
-      2 => '100',
-      5 => '300',
-      10 => '500',
+      100 => '100',
+      300 => '300',
+      500 => '500',
       _ => '',
     };
 
@@ -95,12 +105,12 @@ class _LineChartSample2State extends State<LineChartSample2> {
     return LineChartData(
       gridData: FlGridData(
         show: true,
-        drawVerticalLine: true,
-        horizontalInterval: 1,
+        drawVerticalLine: false,
+        horizontalInterval: 50,
         verticalInterval: 1,
         getDrawingHorizontalLine: (value) {
           return const FlLine(
-            // color: Colors.black,
+            color: Colors.white,
             strokeWidth: 1,
           );
         },
@@ -141,9 +151,9 @@ class _LineChartSample2State extends State<LineChartSample2> {
         border: Border.all(color: const Color(0xff37434d)),
       ),
       minX: 0,
-      maxX: 10,
+      maxX: widget.chartData.isNotEmpty ? widget.chartData.length - 1 : 0,
       minY: 0,
-      maxY: 50,
+      maxY: 550,
 
 
       lineBarsData: [

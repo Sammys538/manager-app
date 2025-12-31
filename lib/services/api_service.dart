@@ -1,9 +1,17 @@
 import 'dart:convert';
+import 'dart:io';
+import 'package:flutter/foundation.dart' hide Summary;
 import 'package:http/http.dart' as http;
 import '../models/summary.dart';
 
 class APIService{
-  static const String serverUrl = "http://localhost:3000";
+  static String get serverUrl {
+    if(kIsWeb){
+      return "http://localhost:3000";
+    } else {
+      return "http://10.0.2.2:3000";
+    }
+  }
 
   static Future<List<dynamic>> getTransactions() async {
     final response = await http.get(Uri.parse('$serverUrl/transaction'));

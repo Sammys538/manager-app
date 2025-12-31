@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 import 'dart:convert';
+import 'package:flutter/foundation.dart' show kIsWeb;
 
 class SignUpScreen extends StatefulWidget {
   const SignUpScreen({super.key});
@@ -25,9 +26,10 @@ class SignUpScreenState extends State<SignUpScreen> {
       return;
     }
 
+    String serverUrl = kIsWeb ? "http://localhost:3000" : "http://10.0.2.2:3000";
 
     try {
-      final endpoint = Uri.parse('http://localhost:3000/signup'); //Change this when testing(mainly change for emulator)
+      final endpoint = Uri.parse('$serverUrl/signup'); //Change this when testing(mainly change for emulator)
       final response = await http.post(
         endpoint,
         headers: {'Content-Type' : 'application/json'},
