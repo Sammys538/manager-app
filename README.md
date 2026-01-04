@@ -2,6 +2,7 @@
 
 [![Flutter](https://img.shields.io/badge/Flutter-3.0-blue?logo=flutter)](https://flutter.dev/)
 [![Dart](https://img.shields.io/badge/Dart-2.18-blue?logo=dart)](https://dart.dev/)
+[![SQL](https://img.shields.io/badge/SQL-MySQL-orange?logo=mysql)](https://www.mysql.com/)
 
 ## Overview
 Manager App is a Flutter-based mobile application designed to help communities organize and manage their operations efficiently. The app allows users to add and view tasks, offerings, and other community entries through a simple and intuitive interface. The project demonstrates clean architecture principles and modular design, making it easy to extend and integrate with backend services or additional features in the future.
@@ -20,7 +21,29 @@ Manager App is a Flutter-based mobile application designed to help communities o
 - Dart SDK (>=2.18)  
 - Android Studio or VS Code with Flutter plugin  
 - Connected device or emulator
+- MySQL installed locally or accessible remotely
 - Backend server running locally or accessible remotely (see Backend Setup below)
+
+### Database Setup
+1. Ensure MySQL is installed and running.
+2. Create the database:
+```sql
+CREATE DATABASE manager_app;
+```
+3. Create a `.env` file in the `backend` folder and fill in with your SQL credentials:
+```
+DB_HOST=localhost
+DB_USER=your_mysql_user
+DB_PASSWORD=your_password
+DB_NAME=manager_app
+DB_PORT=3306
+PORT=3000
+JWT_SECRET=your_jwt_secret
+```
+4. Run the database schema to create tables
+```bash
+mysql -u your_mysql_user -p manager_app < backend/ManagementAppSQL.sql
+```
 
 ### Backend Setup
 Before running the app, make sure the backend is running. If you are using the included backend service:
@@ -58,6 +81,7 @@ Before running the app, make sure the backend is running. If you are using the i
 ## Project Structure
 ```
 manager_app/
+├── ManagementAppSQL.sql # Databse Schema 
 ├── backend/             # Node.js backend
 │ ├── modules/           # Core backend modules
 │ │ ├── Offerings.js
